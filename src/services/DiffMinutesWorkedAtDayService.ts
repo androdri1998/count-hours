@@ -1,21 +1,21 @@
 /* eslint-disable camelcase */
 /* eslint-disable radix */
-import { Checkpoint } from '../@types';
+import { Point } from '../@types';
 import AmountMinutesRequiredToDayWorkService from './AmountMinutesRequiredToDayWorkService';
 import SumDiffBetweenHoursService from './SumDiffBetweenHoursService';
 
 interface IExecuteDTO {
-  checkpoints: Checkpoint[];
+  checkpoints: Point[];
   date: string;
 }
 
-interface IExeecuteResponse {
+interface IExecuteResponse {
   date: string;
   amount_diff_worked_in_minutes: number;
 }
 
 export default class DiffMinutesWorkedAtDayService {
-  execute({ checkpoints = [], date }: IExecuteDTO): IExeecuteResponse {
+  execute({ checkpoints = [], date }: IExecuteDTO): IExecuteResponse {
     let amountDiffWorkedInMinutes = 0;
     const amountMinutesRequiredToDayWorkService = new AmountMinutesRequiredToDayWorkService();
     const sumDiffBetweenHoursService = new SumDiffBetweenHoursService();

@@ -1,7 +1,7 @@
 interface IStoreConstants {
-  WORDS: string;
+  CHECKPOINTS: string;
 }
 
 export const keyStoreConstants: IStoreConstants = {
-  WORDS: '@app:checkpoints',
+  CHECKPOINTS: '@app:checkpoints',
 };

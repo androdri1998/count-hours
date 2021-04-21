@@ -1,28 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { takeEvery, ForkEffect, put } from 'redux-saga/effects';
 
+import StorageProvider from '../../providers/implementations/StorageProvider';
+
+import SaveNewCheckpointService from '../../services/SaveNewCheckpointService';
+
 import checkpointsActions, {
   changeCheckpoints,
 } from '../actions/checkpoints.actions';
-
-// '2021-04-16T00:00:00': [
-//   {
-//       hour: '08:00',
-//       type: 'Entrance'
-//   },
-//   {
-//       hour: '12:00',
-//       type: 'Exit'
-//   },
-//   {
-//       hour: '13:00',
-//       type: 'Entrance'
-//   },
-//   {
-//       hour: '18:22',
-//       type: 'Exit'
-//   },
-// ]
 
 interface IAsyncSaveNewCheckpointDTO {
   type: string;
@@ -30,26 +15,38 @@ interface IAsyncSaveNewCheckpointDTO {
     date: string;
     time: string;
     type: string;
+    startsAt: string;
+    endsAt: string;
   };
 }
 
 function* asyncSaveNewCheckpoint({
-  payload: { date, time, type },
+  payload: { date, time, type, startsAt, endsAt },
 }: IAsyncSaveNewCheckpointDTO) {
-  console.log('teste');
-  yield put(changeCheckpoints({ checkpoints: [] }));
+  const storageProvider = new StorageProvider();
+  const saveNewCheckpointService = new SaveNewCheckpointService(
+    storageProvider,
+  );
+  const { checkpoints } = saveNewCheckpointService.execute({
+    date,
+    time,
+    type,
+    startsAt,
+    endsAt,
+  });
+  yield put(changeCheckpoints({ checkpoints }));
 }
 
 interface IAsyncFetchCheckpointsDTO {
   type: string;
   payload: {
-    startAt: string;
-    endAt: string;
+    startsAt: string;
+    endsAt: string;
   };
 }
 
 function* asyncFetchCheckpoints({
-  payload: { startAt, endAt },
+  payload: { startsAt, endsAt },
 }: IAsyncFetchCheckpointsDTO) {
   console.log('teste');
   yield put(changeCheckpoints({ checkpoints: [] }));

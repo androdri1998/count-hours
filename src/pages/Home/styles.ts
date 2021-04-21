@@ -29,7 +29,7 @@ interface IInputDateProps {
   width?: number;
 }
 
-export const InputDate = styled.input<IInputDateProps>`
+export const Input = styled.input<IInputDateProps>`
   padding: 10px;
   margin-right: 10px;
   height: 50px;
@@ -65,4 +65,9 @@ export const AddButton = styled.button`
     transition: 0.6s;
     background-color: #43007a;
   }
+`;
+
+export const ContainerFilters = styled.section`
+  display: flex;
+  align-items: center;
 `;

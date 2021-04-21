@@ -1,3 +1,5 @@
+import { Checkpoints, Checkpoint } from '../../@types';
+
 interface ICheckpointssActions {
   ASYNC_FETCH_CHECKPOINTS: string;
   CHANGE_CHECKPOINTS: string;
@@ -13,13 +15,13 @@ const checkpointsActions = {
 } as ICheckpointssActions;
 
 interface IChangeCheckpointsDTO {
-  checkpoints: [];
+  checkpoints: Checkpoint[];
 }
 
 interface IChangeCheckpointsResponse {
   type: string;
   payload: {
-    checkpoints: [];
+    checkpoints: Checkpoint[];
   };
 }
 
@@ -29,6 +31,42 @@ export const changeCheckpoints = ({
   type: checkpointsActions.CHANGE_CHECKPOINTS,
   payload: {
     checkpoints,
+  },
+});
+
+interface IAsyncSaveNewCheckpointDTO {
+  date: string;
+  time: string;
+  type: string;
+  startsAt: string;
+  endsAt: string;
+}
+
+interface IAsyncSaveNewCheckpointResponse {
+  type: string;
+  payload: {
+    date: string;
+    time: string;
+    type: string;
+    startsAt: string;
+    endsAt: string;
+  };
+}
+
+export const asyncSaveNewCheckpoint = ({
+  date,
+  time,
+  type,
+  startsAt,
+  endsAt,
+}: IAsyncSaveNewCheckpointDTO): IAsyncSaveNewCheckpointResponse => ({
+  type: checkpointsActions.ASYNC_SAVE_CHECKPOINT,
+  payload: {
+    date,
+    time,
+    type,
+    startsAt,
+    endsAt,
   },
 });
 

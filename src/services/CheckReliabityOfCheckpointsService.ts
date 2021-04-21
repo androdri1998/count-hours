@@ -1,8 +1,8 @@
 /* eslint-disable radix */
-import { Checkpoint } from '../@types';
+import { Point } from '../@types';
 
 interface IExecuteDTO {
-  checkpoints: Checkpoint[];
+  checkpoints: Point[];
 }
 
 export default class CheckReliabityOfCheckpointsService {

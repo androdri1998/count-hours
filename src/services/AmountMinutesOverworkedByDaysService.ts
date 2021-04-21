@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 /* eslint-disable radix */
-import { Checkpoint } from '../@types';
+import { Checkpoints } from '../@types';
 import CheckReliabityOfCheckpointsService from './CheckReliabityOfCheckpointsService';
 import DiffMinutesWorkedAtDayService from './DiffMinutesWorkedAtDayService';
 
 interface IExecuteDTO {
-  checkpoints: { [key: string]: Checkpoint[] };
+  checkpoints: Checkpoints;
 }
 
 interface ICheckpointNoReliable {
@@ -28,7 +28,7 @@ export default class AmountMinutesOverworkedByDaysService {
     Object.keys(checkpoints).forEach((date: string) => {
       const isCheckpointsRealiable = checkReliabityOfCheckpointsService.execute(
         {
-          checkpoints: checkpoints[date],
+          checkpoints: checkpoints[date].points,
         },
       );
 
@@ -36,7 +36,7 @@ export default class AmountMinutesOverworkedByDaysService {
         const {
           amount_diff_worked_in_minutes: amountDiffWorkedInMinutes,
         } = diffMinutesWorkedAtDayService.execute({
-          checkpoints: checkpoints[date],
+          checkpoints: checkpoints[date].points,
           date,
         });
 
