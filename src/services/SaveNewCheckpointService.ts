@@ -1,9 +1,14 @@
 /* eslint-disable camelcase */
 /* eslint-disable radix */
 import { keyStoreConstants } from '../utils/appConstants';
-import { Checkpoint, Checkpoints } from '../@types';
+import { ICheckpoint, ICheckpoints } from '../@types';
+
 import { IStorageProvider } from '../providers/StorageProvider';
+
 import ListCheckpointsService from './ListCheckpointsService';
+import CheckReliabityOfCheckpointsService from './CheckReliabityOfCheckpointsService';
+import DiffMinutesWorkedAtDayService from './DiffMinutesWorkedAtDayService';
+import FormatMinutesToHoursServices from './FormatMinutesToHoursServices';
 
 interface IExecuteDTO {
   type: string;
@@ -14,7 +19,7 @@ interface IExecuteDTO {
 }
 
 interface IExecuteResponse {
-  checkpoints: Checkpoint[];
+  checkpoints: ICheckpoint[];
 }
 
 export default class SaveNewCheckpointService {
@@ -31,13 +36,13 @@ export default class SaveNewCheckpointService {
     startsAt,
     endsAt,
   }: IExecuteDTO): IExecuteResponse {
-    const currentCheckpoints: Checkpoints | null = this.storageProvider.get({
+    const currentCheckpoints: ICheckpoints | null = this.storageProvider.get({
       key: keyStoreConstants.CHECKPOINTS,
     });
 
     let newCheckpoints = {};
     if (!currentCheckpoints) {
-      const dateKeyString = `${date}T00:00:00.000Z`;
+      const dateKeyString = `${date}T03:00:00.000Z`;
       newCheckpoints = {
         [dateKeyString]: {
           date: dateKeyString,
@@ -55,7 +60,7 @@ export default class SaveNewCheckpointService {
         },
       };
     } else {
-      const dateKeyString = `${date}T00:00:00.000Z`;
+      const dateKeyString = `${date}T03:00:00.000Z`;
       const hasCheckpoint = currentCheckpoints[dateKeyString];
       if (hasCheckpoint) {
         const currentCheckpoint = hasCheckpoint;
@@ -63,6 +68,34 @@ export default class SaveNewCheckpointService {
           type,
           hour: time,
         });
+
+        const checkReliabityOfCheckpointsService = new CheckReliabityOfCheckpointsService();
+        const isCheckpointsRealiable = checkReliabityOfCheckpointsService.execute(
+          { checkpoints: currentCheckpoint.points },
+        );
+        if (isCheckpointsRealiable) {
+          const diffMinutesWorkedAtDayService = new DiffMinutesWorkedAtDayService();
+          const {
+            amount_diff_worked_in_minutes: amountDiffWorkedInMinutes,
+          } = diffMinutesWorkedAtDayService.execute({
+            checkpoints: currentCheckpoint.points,
+            date: dateKeyString,
+          });
+
+          const formatMinutesToHoursServices = new FormatMinutesToHoursServices();
+          const {
+            hours_overworked: hoursOverworked,
+          } = formatMinutesToHoursServices.execute({
+            minutes: amountDiffWorkedInMinutes,
+          });
+          currentCheckpoint.resume.minutes_overworked = amountDiffWorkedInMinutes;
+          currentCheckpoint.resume.hours_overworked = hoursOverworked;
+          currentCheckpoint.resume.reliable = isCheckpointsRealiable;
+        } else {
+          currentCheckpoint.resume.reliable = isCheckpointsRealiable;
+          currentCheckpoint.resume.minutes_overworked = 0;
+          currentCheckpoint.resume.hours_overworked = '00h:00min';
+        }
         const newCheckpoint = {
           [dateKeyString]: currentCheckpoint,
         };

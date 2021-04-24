@@ -4,9 +4,12 @@ import { takeEvery, ForkEffect, put } from 'redux-saga/effects';
 import StorageProvider from '../../providers/implementations/StorageProvider';
 
 import SaveNewCheckpointService from '../../services/SaveNewCheckpointService';
+import ListCheckpointsService from '../../services/ListCheckpointsService';
+import AmountMinutesOverworkedByDaysService from '../../services/AmountMinutesOverworkedByDaysService';
 
 import checkpointsActions, {
   changeCheckpoints,
+  changeResumeCheckpoints,
 } from '../actions/checkpoints.actions';
 
 interface IAsyncSaveNewCheckpointDTO {
@@ -34,7 +37,18 @@ function* asyncSaveNewCheckpoint({
     startsAt,
     endsAt,
   });
+
+  const amountMinutesOverworkedByDaysService = new AmountMinutesOverworkedByDaysService();
+  const resume = amountMinutesOverworkedByDaysService.execute({ checkpoints });
+
   yield put(changeCheckpoints({ checkpoints }));
+  yield put(
+    changeResumeCheckpoints({
+      hoursOverworked: resume.hours_overworked,
+      minutesOverworked: resume.amount_overworked_minutes,
+      checkpointsNoReliable: resume.checkpoints_no_reliable,
+    }),
+  );
 }
 
 interface IAsyncFetchCheckpointsDTO {
@@ -48,8 +62,23 @@ interface IAsyncFetchCheckpointsDTO {
 function* asyncFetchCheckpoints({
   payload: { startsAt, endsAt },
 }: IAsyncFetchCheckpointsDTO) {
-  console.log('teste');
-  yield put(changeCheckpoints({ checkpoints: [] }));
+  const storageProvider = new StorageProvider();
+  const listCheckpointsService = new ListCheckpointsService(storageProvider);
+  const { checkpoints } = listCheckpointsService.execute({
+    startsAt,
+    endsAt,
+  });
+  const amountMinutesOverworkedByDaysService = new AmountMinutesOverworkedByDaysService();
+  const resume = amountMinutesOverworkedByDaysService.execute({ checkpoints });
+
+  yield put(changeCheckpoints({ checkpoints }));
+  yield put(
+    changeResumeCheckpoints({
+      hoursOverworked: resume.hours_overworked,
+      minutesOverworked: resume.amount_overworked_minutes,
+      checkpointsNoReliable: resume.checkpoints_no_reliable,
+    }),
+  );
 }
 
 export default function* wordsSaga(): Generator<

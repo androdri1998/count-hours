@@ -1,9 +1,15 @@
-import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { asyncSaveNewCheckpoint } from '../../store/actions/checkpoints.actions';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import {
+  asyncSaveNewCheckpoint,
+  asyncFetchCheckpoints,
+} from '../../store/actions/checkpoints.actions';
 
 import CheckpointsLine from './components/CheckpointsLine';
 import ResumeCheckpoints from './components/ResumeCheckpoints';
+
+import { IReducerState } from '../../store/rootReducer';
 
 import {
   Container,
@@ -16,6 +22,13 @@ import {
 
 const Home: React.FC = () => {
   const dispatch = useDispatch();
+
+  const checkpoints = useSelector(
+    (state: IReducerState) => state.checkpointsReducer.checkpoints,
+  );
+  const resumeCheckpoints = useSelector(
+    (state: IReducerState) => state.checkpointsReducer.resume,
+  );
 
   const [dateSelected, setDateSelected] = useState<string>(
     new Date().toISOString().split('T')[0],
@@ -30,6 +43,10 @@ const Home: React.FC = () => {
   );
   const [timeSelected, setTimeSelected] = useState<string>('08:00');
   const [typeSelected, setTypeSelected] = useState<string>('Entrance');
+
+  useEffect(() => {
+    dispatch(asyncFetchCheckpoints({ endsAt, startsAt }));
+  }, [dispatch, startsAt, endsAt]);
 
   const handleDateSelected = useCallback(event => {
     setDateSelected(event.target.value);
@@ -61,7 +78,7 @@ const Home: React.FC = () => {
         type: typeSelected,
       }),
     );
-  }, [dateSelected, timeSelected, typeSelected, startsAt, endsAt]);
+  }, [dispatch, dateSelected, timeSelected, typeSelected, startsAt, endsAt]);
 
   return (
     <Container>
@@ -85,17 +102,13 @@ const Home: React.FC = () => {
         <Input type="date" value={startsAt} onChange={handleStartsAt} />
         <Input type="date" value={endsAt} onChange={handleEndsAt} />
       </ContainerFilters>
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <CheckpointsLine />
-      <ResumeCheckpoints />
+      {checkpoints.map((checkpoint, index) => (
+        <CheckpointsLine checkpoint={checkpoint} key={`key-${index + 1}`} />
+      ))}
+      <ResumeCheckpoints
+        hoursOverworked={resumeCheckpoints.hours_overworked}
+        minutesOverworked={resumeCheckpoints.minutes_overworked}
+      />
     </Container>
   );
 };

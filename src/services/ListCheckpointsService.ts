@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable radix */
 import { keyStoreConstants } from '../utils/appConstants';
-import { Checkpoints, Checkpoint } from '../@types';
+import { ICheckpoints, ICheckpoint } from '../@types';
 import { IStorageProvider } from '../providers/StorageProvider';
 
 interface IExecuteDTO {
@@ -10,7 +10,7 @@ interface IExecuteDTO {
 }
 
 interface IExecuteResponse {
-  checkpoints: Checkpoint[];
+  checkpoints: ICheckpoint[];
 }
 
 export default class ListCheckpointsService {
@@ -21,11 +21,11 @@ export default class ListCheckpointsService {
   }
 
   execute({ startsAt, endsAt }: IExecuteDTO): IExecuteResponse {
-    const currentCheckpoints: Checkpoints | null = this.storageProvider.get({
+    const currentCheckpoints: ICheckpoints | null = this.storageProvider.get({
       key: keyStoreConstants.CHECKPOINTS,
     });
 
-    const checkpointsFiltered: Checkpoint[] = [];
+    const checkpointsFiltered: ICheckpoint[] = [];
     if (currentCheckpoints) {
       Object.keys(currentCheckpoints).forEach(date => {
         const currentDateIndex = date.split('T')[0];

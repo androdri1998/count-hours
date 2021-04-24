@@ -1,9 +1,9 @@
 /* eslint-disable radix */
-import { Point } from '../@types';
+import { IPoint } from '../@types';
 import DiffBetweenHoursService from './DiffBetweenHoursService';
 
 interface IExecuteDTO {
-  checkpoints: Point[];
+  checkpoints: IPoint[];
 }
 
 export default class SumDiffBetweenHoursService {

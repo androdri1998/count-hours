@@ -2,16 +2,27 @@ import React from 'react';
 
 import { Container } from './styles';
 
-const ResumeCheckpoints: React.FC = () => {
+interface IResumeCheckpointsProps {
+  hoursOverworked: string;
+  minutesOverworked: number;
+}
+
+const ResumeCheckpoints: React.FC<IResumeCheckpointsProps> = ({
+  hoursOverworked,
+  minutesOverworked,
+}) => {
   return (
     <Container>
       <span className="checkpoint-line__describe">
         Hours overworked:
-        <strong>01h:02min</strong>
+        <strong>{hoursOverworked}</strong>
       </span>
       <span className="checkpoint-line__describe">
         Minutes overworked:
-        <strong>560min</strong>
+        <strong>
+          {minutesOverworked}
+          min
+        </strong>
       </span>
     </Container>
   );

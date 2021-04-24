@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 /* eslint-disable radix */
-import { Point } from '../@types';
+import { IPoint } from '../@types';
 import AmountMinutesRequiredToDayWorkService from './AmountMinutesRequiredToDayWorkService';
 import SumDiffBetweenHoursService from './SumDiffBetweenHoursService';
 
 interface IExecuteDTO {
-  checkpoints: Point[];
+  checkpoints: IPoint[];
   date: string;
 }
 
