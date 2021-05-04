@@ -7,20 +7,18 @@ interface IExecuteDTO {
 
 export default class DiffBetweenHourService {
   execute({ input, exit }: IExecuteDTO): number {
-    const inputArr = input.split(':');
-    const hourInput = parseInt(inputArr[0]);
-    const minuteInput = parseInt(inputArr[1]);
+    const currentFullDate = new Date();
+    const currentDate = currentFullDate.toISOString().split('T')[0];
+    const inputDate = new Date(`${currentDate}T${input}:00.000Z`);
+    const exitDate = new Date(`${currentDate}T${exit}:00.000Z`);
 
-    const exitArr = exit.split(':');
-    const hourExit = parseInt(exitArr[0]);
-    const minuteExit = parseInt(exitArr[1]);
+    const MILISECONDS_IN_1_SECOND = 1000;
+    const diffTime =
+      (exitDate.getTime() - inputDate.getTime()) / MILISECONDS_IN_1_SECOND;
 
-    const MINUTES_IN_AN_HOUR = 60;
-    const diffBetweenHoursInMinutes =
-      (hourExit - hourInput) * MINUTES_IN_AN_HOUR;
-    const fractionOfMinutes = minuteInput + minuteExit;
-    const amountTotalMinutes = diffBetweenHoursInMinutes + fractionOfMinutes;
-
-    return amountTotalMinutes;
+    const SECONDS_IN_1_MINUTE = 60;
+    const diffMinutes = diffTime / SECONDS_IN_1_MINUTE;
+    const minutesRounded = Math.abs(Math.round(diffMinutes));
+    return minutesRounded;
   }
 }

@@ -25,6 +25,9 @@ const CheckpointsLine: React.FC<ICheckpointsLineProps> = ({ checkpoint }) => {
       <span className="checkpoint-line__describe">
         {`| ${checkpoint.resume.hours_overworked}`}
       </span>
+      <span className="checkpoint-line__describe">
+        {`| ${checkpoint.resume.minutes_overworked}min`}
+      </span>
     </Container>
   );
 };

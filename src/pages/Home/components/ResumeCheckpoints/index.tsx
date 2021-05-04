@@ -15,12 +15,12 @@ const ResumeCheckpoints: React.FC<IResumeCheckpointsProps> = ({
     <Container>
       <span className="checkpoint-line__describe">
         Hours overworked:
-        <strong>{hoursOverworked}</strong>
+        <strong>{` ${hoursOverworked}`}</strong>
       </span>
       <span className="checkpoint-line__describe">
         Minutes overworked:
         <strong>
-          {minutesOverworked}
+          {` ${minutesOverworked}`}
           min
         </strong>
       </span>

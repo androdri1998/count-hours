@@ -53,7 +53,7 @@ export default class SaveNewCheckpointService {
             },
           ],
           resume: {
-            hours_overworked: '00h:00min',
+            hours_overworked: '0h',
             minutes_overworked: 0,
             reliable: false,
           },
@@ -94,7 +94,7 @@ export default class SaveNewCheckpointService {
         } else {
           currentCheckpoint.resume.reliable = isCheckpointsRealiable;
           currentCheckpoint.resume.minutes_overworked = 0;
-          currentCheckpoint.resume.hours_overworked = '00h:00min';
+          currentCheckpoint.resume.hours_overworked = '0h';
         }
         const newCheckpoint = {
           [dateKeyString]: currentCheckpoint,
@@ -111,7 +111,7 @@ export default class SaveNewCheckpointService {
               },
             ],
             resume: {
-              hours_overworked: '00h:00min',
+              hours_overworked: '0h',
               minutes_overworked: 0,
               reliable: false,
             },
