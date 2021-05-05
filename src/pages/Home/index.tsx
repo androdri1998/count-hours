@@ -30,17 +30,31 @@ const Home: React.FC = () => {
     (state: IReducerState) => state.checkpointsReducer.resume,
   );
 
+  const getCurrentDateString = useCallback(() => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const date =
+      currentDate.getDate() < 10
+        ? `0${currentDate.getDate()}`
+        : currentDate.getDate();
+    const month =
+      currentDate.getMonth() + 1 < 10
+        ? `0${currentDate.getMonth() + 1}`
+        : currentDate.getMonth() + 1;
+    const dateString = `${year}-${month}-${date}`;
+
+    return dateString;
+  }, []);
+
   const [dateSelected, setDateSelected] = useState<string>(
-    new Date().toISOString().split('T')[0],
+    getCurrentDateString,
   );
   const [startsAt, setStartsAt] = useState<string>(() => {
     const currentDateArr = new Date().toISOString().split('T')[0].split('-');
     const currentMonth = `${currentDateArr[0]}-${currentDateArr[1]}-01`;
     return currentMonth;
   });
-  const [endsAt, setEndsAt] = useState<string>(
-    new Date().toISOString().split('T')[0],
-  );
+  const [endsAt, setEndsAt] = useState<string>(getCurrentDateString);
   const [timeSelected, setTimeSelected] = useState<string>('08:00');
   const [typeSelected, setTypeSelected] = useState<string>('Entrance');
 
@@ -61,7 +75,15 @@ const Home: React.FC = () => {
   }, []);
 
   const handleTimeSelected = useCallback(event => {
-    setTimeSelected(event.target.value);
+    const time = event.target.value;
+
+    let newTime = time.replace(':', '');
+    if (time.length > 2 && time.includes(':')) {
+      newTime = `${time.slice(0, 2)}:${time.slice(3, time.length)}`;
+    } else if (time.length > 2 && !time.includes(':')) {
+      newTime = `${time.slice(0, 2)}:${time.slice(2, time.length)}`;
+    }
+    setTimeSelected(newTime);
   }, []);
 
   const handleTypeSelected = useCallback(event => {
@@ -69,15 +91,17 @@ const Home: React.FC = () => {
   }, []);
 
   const handleAddCheckpoint = useCallback(() => {
-    dispatch(
-      asyncSaveNewCheckpoint({
-        date: dateSelected,
-        startsAt,
-        endsAt,
-        time: timeSelected,
-        type: typeSelected,
-      }),
-    );
+    if (timeSelected.length === 5) {
+      dispatch(
+        asyncSaveNewCheckpoint({
+          date: dateSelected,
+          startsAt,
+          endsAt,
+          time: timeSelected,
+          type: typeSelected,
+        }),
+      );
+    }
   }, [dispatch, dateSelected, timeSelected, typeSelected, startsAt, endsAt]);
 
   return (
