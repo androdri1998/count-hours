@@ -44,6 +44,10 @@ export default class GetMinutesRestRemainsService {
     const minuteOfRest = 60;
     const minutesRestRemains = minuteOfRest - amountRestMinutes;
 
+    if (minutesRestRemains < 0) {
+      return 0;
+    }
+
     return minutesRestRemains;
   }
 }
