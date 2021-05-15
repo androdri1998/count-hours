@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -79,7 +80,11 @@ const Home: React.FC = () => {
 
     let newTime = time.replace(':', '');
     if (time.length > 2 && time.includes(':')) {
-      newTime = `${time.slice(0, 2)}:${time.slice(3, time.length)}`;
+      const timeOnlyNumbers = time.replace(':', '');
+      newTime = `${timeOnlyNumbers.slice(0, 2)}:${timeOnlyNumbers.slice(
+        2,
+        timeOnlyNumbers.length,
+      )}`;
     } else if (time.length > 2 && !time.includes(':')) {
       newTime = `${time.slice(0, 2)}:${time.slice(2, time.length)}`;
     }
@@ -91,7 +96,15 @@ const Home: React.FC = () => {
   }, []);
 
   const handleAddCheckpoint = useCallback(() => {
-    if (timeSelected.length === 5) {
+    const checkTime = timeSelected.split(':');
+
+    const AMOUNT_HOURS_IN_ONE_DAY = 24;
+    const AMOUNT_MINUTES_IN_ONE_HOUR = 60;
+    if (
+      timeSelected.length === 5 &&
+      parseInt(checkTime[0]) < AMOUNT_HOURS_IN_ONE_DAY &&
+      parseInt(checkTime[1]) < AMOUNT_MINUTES_IN_ONE_HOUR
+    ) {
       dispatch(
         asyncSaveNewCheckpoint({
           date: dateSelected,
@@ -101,6 +114,8 @@ const Home: React.FC = () => {
           type: typeSelected,
         }),
       );
+    } else {
+      console.log('Hour is not valid');
     }
   }, [dispatch, dateSelected, timeSelected, typeSelected, startsAt, endsAt]);
 
